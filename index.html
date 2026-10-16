@@ -500,4 +500,252 @@
                 if (tipo === "LONG") {
                     osc.frequency.setValueAtTime(520, ctx.currentTime);
                     osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
+                } else {
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
                 }
+
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3);
+            } catch (e) {
+                console.log("Audio Error:", e);
+            }
+        }
+
+        function toggleAudio() {
+            audioHabilitado = !audioHabilitado;
+            var btn = document.getElementById('btn-audio');
+            if (audioHabilitado) {
+                btn.innerText = "🔔 Alertas: ON";
+                btn.classList.add('active');
+                reproducirAlertaSonora("LONG");
+            } else {
+                btn.innerText = "🔔 Alertas: OFF";
+                btn.classList.remove('active');
+            }
+        }
+
+        function setPerfil(nombre) {
+            var btns = document.querySelectorAll('.btn-profile');
+            for (var i = 0; i < btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            if (nombre === 'agresivo') {
+                document.getElementById('btn-agresivo').classList.add('active');
+                perfilActual = { emaFast: 5, emaMed: 13, emaSlow: 34, macdFast: 8, macdSlow: 17 };
+            } else if (nombre === 'equilibrado') {
+                document.getElementById('btn-equilibrado').classList.add('active');
+                perfilActual = { emaFast: 9, emaMed: 21, emaSlow: 50, macdFast: 12, macdSlow: 26 };
+            } else if (nombre === 'conservador') {
+                document.getElementById('btn-conservador').classList.add('active');
+                perfilActual = { emaFast: 12, emaMed: 26, emaSlow: 100, macdFast: 16, macdSlow: 36 };
+            }
+            calcularIndicadoresEnVivo();
+        }
+
+        function actualizarWinrateUI() {
+            var winrate = total > 0 ? ((aciertos / total) * 100).toFixed(1) : 0;
+            document.getElementById('acc-win').innerText = aciertos;
+            document.getElementById('acc-total').innerText = total;
+            document.getElementById('acc-rate').innerText = winrate + "%";
+        }
+
+        function actualizarPrecioUI(precio) {
+            if (!precio || isNaN(precio) || precio <= 0) return;
+            precioActual = precio;
+            var tfs = ['1m', '3m', '5m'];
+            for (var i = 0; i < tfs.length; i++) {
+                var el = document.getElementById('precio-' + tfs[i]);
+                if (el) el.innerText = "$" + precioActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+            }
+            historicoPrecios.push(precioActual);
+            if (historicoPrecios.length > 300) historicoPrecios.shift();
+            calcularIndicadoresEnVivo();
+        }
+
+        // Multifuente anti-bloqueo (CoinGecko / Binance)
+        function obtenerPrecioAntiBloqueo() {
+            // Fuente 1: CoinGecko Proxy Libre
+            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data && data.bitcoin && data.bitcoin.usd) {
+                        actualizarPrecioUI(parseFloat(data.bitcoin.usd));
+                    } else {
+                        throw new Error('Fallback Binance');
+                    }
+                })
+                .catch(function() {
+                    // Fuente 2: Binance REST API Directa
+                    fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+                        .then(function(res) { return res.json(); })
+                        .then(function(data) {
+                            if (data && data.price) {
+                                actualizarPrecioUI(parseFloat(data.price));
+                            }
+                        })
+                        .catch(function(e) { console.log("Error conectando APIs de precio", e); });
+                });
+
+            // Libro de órdenes estimado/simulado en base al precio actual
+            actualizarOrderBookUI();
+        }
+
+        function actualizarOrderBookUI() {
+            if (precioActual <= 0) return;
+            var comprasUsd = 0, bidsHtml = '';
+            var ventasUsd = 0, asksHtml = '';
+
+            for (var i = 0; i < 5; i++) {
+                var pBid = precioActual - (i + 1) * 2.5;
+                var qBid = (Math.random() * 0.8 + 0.2);
+                var usdBid = pBid * qBid;
+                comprasUsd += usdBid;
+                bidsHtml += '<div class="ob-list-row"><span style="color:#0ecb81; font-weight:bold;">$' + pBid.toLocaleString('en-US', {minimumFractionDigits:2}) + '</span><span>$' + Math.round(usdBid).toLocaleString('en-US') + '</span></div>';
+
+                var pAsk = precioActual + (i + 1) * 2.5;
+                var qAsk = (Math.random() * 0.8 + 0.2);
+                var usdAsk = pAsk * qAsk;
+                ventasUsd += usdAsk;
+                asksHtml += '<div class="ob-list-row"><span style="color:#f6465d; font-weight:bold;">$' + pAsk.toLocaleString('en-US', {minimumFractionDigits:2}) + '</span><span>$' + Math.round(usdAsk).toLocaleString('en-US') + '</span></div>';
+            }
+
+            var totalUsd = comprasUsd + ventasUsd;
+            var pctCompras = totalUsd > 0 ? (comprasUsd / totalUsd) * 100 : 50;
+            var deseq = (pctCompras - (100 - pctCompras)).toFixed(1);
+
+            document.getElementById('ob-buy-usd').innerText = "$" + Math.round(comprasUsd).toLocaleString('en-US');
+            document.getElementById('ob-sell-usd').innerText = "$" + Math.round(ventasUsd).toLocaleString('en-US');
+            document.getElementById('ob-imb-val').innerText = (deseq > 0 ? '+' : '') + deseq + "%";
+            document.getElementById('ob-bar-fill').style.width = pctCompras + "%";
+            document.getElementById('ob-bids-list').innerHTML = bidsHtml;
+            document.getElementById('ob-asks-list').innerHTML = asksHtml;
+        }
+
+        function calcularEMA(periodo, datos) {
+            if (!datos || datos.length === 0) return 0;
+            if (datos.length < periodo) return datos[datos.length - 1];
+            var k = 2 / (periodo + 1);
+            var ema = datos[0];
+            for (var i = 1; i < datos.length; i++) ema = datos[i] * k + ema * (1 - k);
+            return ema;
+        }
+
+        function calcularRSI(periodo, datos) {
+            if (!datos || datos.length < periodo + 1) return 50;
+            var ganancias = 0, perdidas = 0;
+            for (var i = datos.length - periodo; i < datos.length; i++) {
+                var diff = datos[i] - datos[i - 1];
+                if (diff >= 0) ganancias += diff; else perdidas -= diff;
+            }
+            var avgG = ganancias / periodo;
+            var avgP = perdidas / periodo;
+            if (avgP === 0) return 100;
+            return 100 - (100 / (1 + (avgG / avgP)));
+        }
+
+        function calcularMACD(fast, slow, datos) {
+            if (!datos || datos.length < slow) return 0;
+            var emaFast = calcularEMA(fast, datos);
+            var emaSlow = calcularEMA(slow, datos);
+            return emaFast - emaSlow;
+        }
+
+        function calcularIndicadoresEnVivo() {
+            if (!historicoPrecios || historicoPrecios.length === 0) return;
+
+            var emaFast = calcularEMA(perfilActual.emaFast, historicoPrecios);
+            var emaMed = calcularEMA(perfilActual.emaMed, historicoPrecios);
+            var emaSlow = calcularEMA(perfilActual.emaSlow, historicoPrecios);
+            var rsi = calcularRSI(14, historicoPrecios);
+            var macdVal = calcularMACD(perfilActual.macdFast, perfilActual.macdSlow, historicoPrecios);
+
+            var indiceAlcista = 0, indiceBajista = 0;
+            if (precioActual > emaSlow) indiceAlcista += 30; else indiceBajista += 30;
+            if (emaFast > emaMed) indiceAlcista += 30; else indiceBajista += 30;
+            if (rsi > 52) indiceAlcista += 20; else if (rsi < 48) indiceBajista += 20;
+            if (macdVal > 0) indiceAlcista += 20; else indiceBajista += 20;
+
+            var sesgo = (precioActual > emaSlow && emaFast > emaMed) ? "ALCISTA (BULLISH)" : (precioActual < emaSlow && emaFast < emaMed) ? "BAJISTA (BEARISH)" : "NEUTRAL";
+            var estado = indiceAlcista >= 70 ? "POSIBLE LONG" : indiceBajista >= 70 ? "POSIBLE SHORT" : "ESPERAR";
+
+            if (estado !== "ESPERAR" && estado !== senalSonadaActual) {
+                if (estado === "POSIBLE LONG") reproducirAlertaSonora("LONG");
+                else if (estado === "POSIBLE SHORT") reproducirAlertaSonora("SHORT");
+                senalSonadaActual = estado;
+            } else if (estado === "ESPERAR") {
+                senalSonadaActual = null;
+            }
+
+            ultimaSenalTipo = estado;
+
+            var tfs = ['1m', '3m', '5m'];
+            for (var i = 0; i < tfs.length; i++) {
+                var tf = tfs[i];
+                document.getElementById('ema9-' + tf).innerText = emaFast.toFixed(2);
+                document.getElementById('ema50-' + tf).innerText = emaSlow.toFixed(2);
+                document.getElementById('rsi-' + tf).innerText = rsi.toFixed(2);
+                document.getElementById('macd-' + tf).innerText = macdVal.toFixed(2);
+                document.getElementById('sesgo-' + tf).innerText = sesgo;
+
+                document.getElementById('alc-' + tf + '-val').innerText = indiceAlcista + "%";
+                document.getElementById('alc-' + tf + '-bar').style.width = indiceAlcista + "%";
+
+                document.getElementById('baj-' + tf + '-val').innerText = indiceBajista + "%";
+                document.getElementById('baj-' + tf + '-bar').style.width = indiceBajista + "%";
+
+                var badge = document.getElementById('badge-' + tf);
+                badge.innerText = estado;
+                badge.className = 'badge ' + (estado === 'POSIBLE LONG' ? 'badge-long' : estado === 'POSIBLE SHORT' ? 'badge-short' : 'badge-wait');
+            }
+
+            document.getElementById('sys-sesgo-global').innerText = sesgo;
+            document.getElementById('sys-decision').innerText = estado === "ESPERAR" ? "SIN DIRECCIÓN CLARA - ESPERAR" : "ALTA CONFLUENCIA - " + estado;
+            document.getElementById('fibo-alza-val').innerText = indiceAlcista + "%";
+            document.getElementById('fibo-alza-bar').style.width = indiceAlcista + "%";
+            document.getElementById('fibo-baja-val').innerText = indiceBajista + "%";
+            document.getElementById('fibo-baja-bar').style.width = indiceBajista + "%";
+        }
+
+        function actualizarRelojYContador() {
+            var ahora = new Date();
+            var segActualesEnBloque = (ahora.getUTCMinutes() % 5) * 60 + ahora.getUTCSeconds();
+            var segRestantes = 300 - segActualesEnBloque;
+
+            var m = Math.floor(segRestantes / 60);
+            var s = segRestantes % 60;
+            document.getElementById('timer-5m').innerText = String(m).padStart(2, '0') + ":" + String(s).padStart(2, '0');
+
+            if (segRestantes === 300 || segRestantes === 0) {
+                if (!evaluadoEsteBloque && ultimaSenalTipo && ultimaSenalTipo !== "ESPERAR") {
+                    if (historicoPrecios.length >= 5) {
+                        var precioInicioVela = historicoPrecios[0] || precioActual;
+                        if (ultimaSenalTipo === "POSIBLE LONG") {
+                            if (precioActual > precioInicioVela) aciertos++; else fallos++;
+                            total++;
+                        } else if (ultimaSenalTipo === "POSIBLE SHORT") {
+                            if (precioActual < precioInicioVela) aciertos++; else fallos++;
+                            total++;
+                        }
+                        localStorage.setItem('scalper_aciertos', aciertos);
+                        localStorage.setItem('scalper_fallos', fallos);
+                        localStorage.setItem('scalper_total', total);
+                        actualizarWinrateUI();
+                    }
+                    evaluadoEsteBloque = true;
+                }
+            } else {
+                evaluadoEsteBloque = false;
+            }
+        }
+
+        actualizarWinrateUI();
+        obtenerPrecioAntiBloqueo();
+        setInterval(obtenerPrecioAntiBloqueo, 2000);
+        setInterval(actualizarRelojYContador, 1000);
+    </script>
+</body>
+</html>
