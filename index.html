@@ -233,7 +233,7 @@
 <body>
 
     <header>
-        <h1>SERGIO BTC PREDICTION</h1>
+        <h1>SERGIO BTC PREDICTION v2.5</h1>
         <div class="header-right">
             <div class="stats-badge">
                 🎯 Aciertos: <span id="acc-win">0</span> / <span id="acc-total">0</span> 
@@ -385,4 +385,201 @@
         <div class="system-card">
             <div class="system-title">Posibles Reacciones</div>
             <div class="system-main-text" id="sys-fibo-titulo">MONITOREANDO NIVELES</div>
-            <div class="system-desc">
+            <div class="system-desc">Zonas y presión de cierre en temporalidad de 5m.</div>
+            
+            <div class="bar-label"><span>Posible alza</span><span id="fibo-alza-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-alza-bar" class="progress-fill fill-green" style="width: 50%;"></div></div>
+
+            <div class="bar-label"><span>Posible baja</span><span id="fibo-baja-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-baja-bar" class="progress-fill fill-red" style="width: 50%;"></div></div>
+        </div>
+    </div>
+
+    <script>
+        let velas1m = [];
+        let precioActualGlobal = 0;
+
+        // Persistencia del Contador de Aciertos en LocalStorage
+        let aciertos = parseInt(localStorage.getItem('scalper_aciertos') || '0');
+        let fallos = parseInt(localStorage.getItem('scalper_fallos') || '0');
+        let total = parseInt(localStorage.getItem('scalper_total') || '0');
+        let senalEvaluadaActual = false;
+
+        function actualizarMétricasUI() {
+            let winrate = total > 0 ? ((aciertos / total) * 100).toFixed(1) : 0;
+            document.getElementById('acc-win').innerText = aciertos;
+            document.getElementById('acc-total').innerText = total;
+            document.getElementById('acc-rate').innerText = `${winrate}%`;
+        }
+
+        // WebSockets directos sin intermediarios
+        function conectarBinanceWebsockets() {
+            const wsTicker = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+            wsTicker.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                precioActualGlobal = parseFloat(data.c);
+                ['1m', '3m', '5m'].forEach(tf => {
+                    const elem = document.getElementById(`precio-${tf}`);
+                    if (elem) elem.innerText = `$${precioActualGlobal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                });
+            };
+
+            const wsDepth = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth10@100ms');
+            wsDepth.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (!data.bids || !data.asks) return;
+
+                let compras_usd = 0, bidsHtml = '';
+                data.bids.slice(0, 5).forEach(b => {
+                    let price = parseFloat(b[0]), usd = price * parseFloat(b[1]);
+                    compras_usd += usd;
+                    bidsHtml += `<div class="ob-list-row"><span style="color:#0ecb81; font-weight:bold;">$${price.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
+                });
+
+                let ventas_usd = 0, asksHtml = '';
+                data.asks.slice(0, 5).forEach(a => {
+                    let price = parseFloat(a[0]), usd = price * parseFloat(a[1]);
+                    ventas_usd += usd;
+                    asksHtml += `<div class="ob-list-row"><span style="color:#f6465d; font-weight:bold;">$${price.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
+                });
+
+                let total_usd = compras_usd + ventas_usd;
+                let pct_compras = total_usd > 0 ? (compras_usd / total_usd) * 100 : 50;
+                let desequilibrio = (pct_compras - (100 - pct_compras)).toFixed(1);
+
+                document.getElementById('ob-buy-usd').innerText = `$${Math.round(compras_usd).toLocaleString('en-US')}`;
+                document.getElementById('ob-sell-usd').innerText = `$${Math.round(ventas_usd).toLocaleString('en-US')}`;
+                document.getElementById('ob-imb-val').innerText = `${desequilibrio > 0 ? '+' : ''}${desequilibrio}%`;
+                document.getElementById('ob-bar-fill').style.width = `${pct_compras}%`;
+                document.getElementById('ob-bids-list').innerHTML = bidsHtml;
+                document.getElementById('ob-asks-list').innerHTML = asksHtml;
+            };
+
+            wsTicker.onclose = () => setTimeout(conectarBinanceWebsockets, 2000);
+            wsDepth.onclose = () => setTimeout(conectarBinanceWebsockets, 2000);
+        }
+
+        async function CargarKlinesDirectas() {
+            try {
+                let res = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=200');
+                if (!res.ok) return;
+                let data = await res.json();
+                velas1m = data.map(d => ({
+                    open: parseFloat(d[1]), high: parseFloat(d[2]), low: parseFloat(d[3]), close: parseFloat(d[4])
+                }));
+                calcularIndicadoresLocales();
+            } catch (err) {}
+        }
+
+        function EMA(periodo, datos) {
+            let k = 2 / (periodo + 1), ema = datos[0];
+            for (let i = 1; i < datos.length; i++) ema = datos[i] * k + ema * (1 - k);
+            return ema;
+        }
+
+        function RSI(periodo, datos) {
+            let g = 0, p = 0;
+            for (let i = datos.length - periodo; i < datos.length; i++) {
+                let diff = datos[i] - datos[i - 1];
+                if (diff >= 0) g += diff; else p -= diff;
+            }
+            return p === 0 ? 100 : 100 - (100 / (1 + (g / p)));
+        }
+
+        function calcularIndicadoresLocales() {
+            if (velas1m.length < 50) return;
+            const closes = velas1m.map(v => v.close);
+            const v = velas1m[velas1m.length - 1];
+
+            const ema9 = EMA(9, closes), ema21 = EMA(21, closes), ema50 = EMA(50, closes), rsi = RSI(14, closes);
+            const rango = v.high - v.low;
+            const presion = rango > 0 ? Math.round(((v.close - v.low) / rango) * 100) : 50;
+
+            let alcista = 0, bajista = 0;
+            if (v.close > ema50) alcista += 35; else bajista += 35;
+            if (ema9 > ema21) alcista += 35; else bajista += 35;
+            if (rsi > 53) alcista += 30; else if (rsi < 47) bajista += 30;
+
+            let sesgo = (v.close > ema50 && ema9 > ema21) ? "ALCISTA (BULLISH)" : (v.close < ema50 && ema9 < ema21) ? "BAJISTA (BEARISH)" : "NEUTRAL";
+            let estadoGlobal = alcista >= 70 ? "POSIBLE LONG" : bajista >= 70 ? "POSIBLE SHORT" : "ESPERAR";
+
+            ['1m', '3m', '5m'].forEach(tf => {
+                document.getElementById(`ema9-${tf}`).innerText = ema9.toFixed(2);
+                document.getElementById(`ema21-${tf}`).innerText = ema21.toFixed(2);
+                document.getElementById(`ema50-${tf}`).innerText = ema50.toFixed(2);
+                document.getElementById(`rsi-${tf}`).innerText = rsi.toFixed(2);
+                document.getElementById(`sesgo-${tf}`).innerText = sesgo;
+
+                document.getElementById(`alc-${tf}-val`).innerText = `${alcista}%`;
+                document.getElementById(`alc-${tf}-bar`).style.width = `${alcista}%`;
+
+                document.getElementById(`baj-${tf}-val`).innerText = `${bajista}%`;
+                document.getElementById(`baj-${tf}-bar`).style.width = `${bajista}%`;
+
+                document.getElementById(`pres-${tf}-val`).innerText = `${presion}%`;
+                document.getElementById(`pres-${tf}-bar`).style.width = `${presion}%`;
+
+                let badge = document.getElementById(`badge-${tf}`);
+                badge.innerText = estadoGlobal;
+                badge.className = `badge ${estadoGlobal === 'POSIBLE LONG' ? 'badge-long' : estadoGlobal === 'POSIBLE SHORT' ? 'badge-short' : 'badge-wait'}`;
+            });
+
+            document.getElementById('sys-sesgo-global').innerText = sesgo;
+            document.getElementById('sys-decision').innerText = estadoGlobal === "ESPERAR" ? "SIN DIRECCIÓN CLARA - ESPERAR" : `ALTA CONFLUENCIA - ${estadoGlobal}`;
+            document.getElementById('fibo-alza-val').innerText = `${presion}%`;
+            document.getElementById('fibo-alza-bar').style.width = `${presion}%`;
+            document.getElementById('fibo-baja-val').innerText = `${100 - presion}%`;
+            document.getElementById('fibo-baja-bar').style.width = `${100 - presion}%`;
+        }
+
+        // Reloj Matemático Independiente (Precisión UTC absoluta para Cierre 5M)
+        function ejecutarRelojMatematico() {
+            const ahora = new Date();
+            const segundosPasadosEnBloque5m = (ahora.getUTCMinutes() % 5) * 60 + ahora.getUTCSeconds();
+            const segundosRestantes = 300 - segundosPasadosEnBloque5m;
+
+            const min = Math.floor(segundosRestantes / 60);
+            const seg = segundosRestantes % 60;
+
+            document.getElementById('timer-5m').innerText = `${String(min).padStart(2, '0')}:${String(seg).padStart(2, '0')}`;
+
+            // Al cerrar la vela (segundo 0)
+            if (segundosRestantes === 300 || segundosRestantes === 0) {
+                if (!senalEvaluadaActual) {
+                    evaluarAciertoVela();
+                    senalEvaluadaActual = true;
+                }
+            } else {
+                senalEvaluadaActual = false;
+            }
+        }
+
+        function evaluarAciertoVela() {
+            let estado = document.getElementById('badge-5m').innerText;
+            if (velas1m.length < 5) return;
+            
+            let velaActual = velas1m[velas1m.length - 1];
+            let velaPrevia = velas1m[velas1m.length - 2];
+
+            if (estado === "POSIBLE LONG") {
+                if (velaActual.close > velaPrevia.close) aciertos++; else fallos++;
+                total++;
+            } else if (estado === "POSIBLE SHORT") {
+                if (velaActual.close < velaPrevia.close) aciertos++; else fallos++;
+                total++;
+            }
+
+            localStorage.setItem('scalper_aciertos', aciertos);
+            localStorage.setItem('scalper_fallos', fallos);
+            localStorage.setItem('scalper_total', total);
+            actualizarMétricasUI();
+        }
+
+        actualizarMétricasUI();
+        conectarBinanceWebsockets();
+        CargarKlinesDirectas();
+        setInterval(CargarKlinesDirectas, 3000);
+        setInterval(ejecutarRelojMatematico, 1000);
+    </script>
+</body>
+</html>
