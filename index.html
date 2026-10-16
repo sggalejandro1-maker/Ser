@@ -398,9 +398,11 @@
     <script>
         let velas1m = [];
         let precioActualGlobal = 0;
+        let tiempoCierreVela5mBinance = 0;
 
-        // Conectar a Binance directamente desde el navegador del usuario (Sin bloqueos de IP)
+        // Conectar a Binance directamente vía WebSocket
         function conectarBinanceWebsockets() {
+            // Ticker de precio en vivo
             const wsTicker = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
             wsTicker.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -411,6 +413,16 @@
                 });
             };
 
+            // Stream de Velas 5M para sincronización exacta del Cierre
+            const wsKline5m = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@kline_5m');
+            wsKline5m.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.k && data.k.T) {
+                    tiempoCierreVela5mBinance = data.k.T;
+                }
+            };
+
+            // Libro de órdenes
             const wsDepth = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth10@100ms');
             wsDepth.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -449,18 +461,15 @@
             };
 
             wsTicker.onclose = () => setTimeout(conectarBinanceWebsockets, 3000);
+            wsKline5m.onclose = () => setTimeout(conectarBinanceWebsockets, 3000);
             wsDepth.onclose = () => setTimeout(conectarBinanceWebsockets, 3000);
         }
 
         async function CargarKlinesDirectas() {
             try {
                 let res = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=200');
-                if (!res.ok) {
-                    res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-                    let cgData = await res.json();
-                    if(cgData.bitcoin) precioActualGlobal = cgData.bitcoin.usd;
-                    return;
-                }
+                if (!res.ok) return;
+                
                 let data = await res.json();
                 velas1m = data.map(d => ({
                     time: d[0],
@@ -559,13 +568,30 @@
             document.getElementById('fibo-baja-bar').style.width = `${100 - presion}%`;
         }
 
+        // Reloj sincronizado exactamente con el tiempo UTC de Binance
         function actualizarReloj() {
-            const ahora = new Date();
-            const min = ahora.getMinutes();
-            const seg = ahora.getSeconds();
-            const minFaltantes = 4 - (min % 5);
-            const segFaltantes = 59 - seg;
-            document.getElementById('timer-5m').innerText = `${String(minFaltantes).padStart(2, '0')}:${String(segFaltantes).padStart(2, '0')}`;
+            let tiempoRestanteMs = 0;
+
+            if (tiempoCierreVela5mBinance > 0) {
+                tiempoRestanteMs = tiempoCierreVela5mBinance - Date.now();
+            } else {
+                // Cálculo de respaldo estricto UTC
+                const ahora = new Date();
+                const minUTC = ahora.getUTCMinutes();
+                const segUTC = ahora.getUTCSeconds();
+                const minFaltantes = 4 - (minUTC % 5);
+                const segFaltantes = 59 - segUTC;
+                tiempoRestanteMs = (minFaltantes * 60 + segFaltantes) * 1000;
+            }
+
+            let totalSegundos = Math.max(0, Math.floor(tiempoRestanteMs / 1000));
+            let minutos = Math.floor(totalSegundos / 60);
+            let segundos = totalSegundos % 60;
+
+            let minStr = String(minutos).padStart(2, '0');
+            let secStr = String(segundos).padStart(2, '0');
+
+            document.getElementById('timer-5m').innerText = `${minStr}:${secStr}`;
         }
 
         conectarBinanceWebsockets();
