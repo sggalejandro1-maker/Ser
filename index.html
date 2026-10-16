@@ -336,7 +336,7 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-1m">Conectado a Binance WebSocket...</div>
+            <div class="desc-box" id="desc-1m">Conectando servicio Binance...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-1m">50.00</span></div>
@@ -364,7 +364,7 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-3m">Conectado a Binance WebSocket...</div>
+            <div class="desc-box" id="desc-3m">Conectando servicio Binance...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-3m">50.00</span></div>
@@ -392,4 +392,61 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-5m">Conect
+            <div class="desc-box" id="desc-5m">Conectando servicio Binance...</div>
+
+            <div class="indicators-grid">
+                <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-5m">50.00</span></div>
+                <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-5m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Rápida:</span><span class="ind-val" id="ema9-5m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Lenta:</span><span class="ind-val" id="ema50-5m">0.00</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Libro de Órdenes -->
+    <div class="orderbook-card">
+        <div class="ob-header">
+            <div>
+                <div class="ob-title-sub">BTC/USDT · BINANCE SPOT</div>
+                <div class="ob-title">Libro de órdenes</div>
+            </div>
+            <div class="ob-badge-sync">EN VIVO</div>
+        </div>
+
+        <div class="ob-metrics-grid">
+            <div class="ob-metric-item">
+                <div class="ob-metric-label">Compras visibles</div>
+                <div class="ob-metric-val-buy" id="ob-buy-usd">$0</div>
+            </div>
+            <div class="ob-metric-item">
+                <div class="ob-metric-label">Ventas visibles</div>
+                <div class="ob-metric-val-sell" id="ob-sell-usd">$0</div>
+            </div>
+            <div class="ob-metric-item">
+                <div class="ob-metric-label">Desequilibrio</div>
+                <div class="ob-metric-val-imb" id="ob-imb-val">0.0%</div>
+            </div>
+        </div>
+
+        <div class="progress-bar" style="height: 10px;">
+            <div id="ob-bar-fill" class="progress-fill fill-green" style="width: 50%;"></div>
+        </div>
+
+        <div class="ob-depth-grid">
+            <div class="ob-depth-box">
+                <div class="ob-depth-header" style="color: #0ecb81;">Compradores (BID)</div>
+                <div id="ob-bids-list"><div class="ob-list-row"><span>Cargando...</span></div></div>
+            </div>
+            <div class="ob-depth-box">
+                <div class="ob-depth-header" style="color: #f6465d;">Vendedores (ASK)</div>
+                <div id="ob-asks-list"><div class="ob-list-row"><span>Cargando...</span></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bloque Inferior -->
+    <div class="system-grid">
+        <div class="system-card">
+            <div class="system-title">Decisión del Sistema</div>
+            <div class="system-main-text" id="sys-decision">ANALIZANDO MERCADO...</div>
+            <div class="system-desc" id="sys-reaccion">
