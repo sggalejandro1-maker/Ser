@@ -336,7 +336,7 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-1m">Conectando servicio Binance...</div>
+            <div class="desc-box" id="desc-1m">Monitoreando mercado en vivo...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-1m">50.00</span></div>
@@ -364,7 +364,7 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-3m">Conectando servicio Binance...</div>
+            <div class="desc-box" id="desc-3m">Monitoreando mercado en vivo...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-3m">50.00</span></div>
@@ -392,7 +392,7 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-5m">Conectando servicio Binance...</div>
+            <div class="desc-box" id="desc-5m">Monitoreando mercado en vivo...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-5m">50.00</span></div>
@@ -407,7 +407,7 @@
     <div class="orderbook-card">
         <div class="ob-header">
             <div>
-                <div class="ob-title-sub">BTC/USDT · BINANCE SPOT</div>
+                <div class="ob-title-sub">BTC/USDT · PRECIO EN VIVO</div>
                 <div class="ob-title">Libro de órdenes</div>
             </div>
             <div class="ob-badge-sync">EN VIVO</div>
@@ -449,4 +449,55 @@
         <div class="system-card">
             <div class="system-title">Decisión del Sistema</div>
             <div class="system-main-text" id="sys-decision">ANALIZANDO MERCADO...</div>
-            <div class="system-desc" id="sys-reaccion">
+            <div class="system-desc" id="sys-reaccion">Evaluando cruce de medias y MACD configurados.</div>
+            <div class="sesgo-box">Sesgo General: <span class="sesgo-val" id="sys-sesgo-global">NEUTRAL</span></div>
+        </div>
+
+        <div class="system-card">
+            <div class="system-title">Posibles Reacciones</div>
+            <div class="system-main-text" id="sys-fibo-titulo">MONITOREANDO NIVELES</div>
+            <div class="system-desc">Zonas y presión de cierre en temporalidad de 5m.</div>
+            
+            <div class="bar-label"><span>Posible alza</span><span id="fibo-alza-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-alza-bar" class="progress-fill fill-green" style="width: 50%;"></div></div>
+
+            <div class="bar-label"><span>Posible baja</span><span id="fibo-baja-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-baja-bar" class="progress-fill fill-red" style="width: 50%;"></div></div>
+        </div>
+    </div>
+
+    <script>
+        var precioActual = 0;
+        var historicoPrecios = [];
+        
+        var aciertos = parseInt(localStorage.getItem('scalper_aciertos') || '0');
+        var fallos = parseInt(localStorage.getItem('scalper_fallos') || '0');
+        var total = parseInt(localStorage.getItem('scalper_total') || '0');
+        var ultimaSenalTipo = null;
+        var senalSonadaActual = null;
+        var evaluadoEsteBloque = false;
+        var audioHabilitado = false;
+
+        var perfilActual = {
+            emaFast: 9,
+            emaMed: 21,
+            emaSlow: 50,
+            macdFast: 12,
+            macdSlow: 26
+        };
+
+        function reproducirAlertaSonora(tipo) {
+            if (!audioHabilitado) return;
+            try {
+                var AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                var ctx = new AudioCtx();
+                var osc = ctx.createOscillator();
+                var gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (tipo === "LONG") {
+                    osc.frequency.setValueAtTime(520, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
+                }
