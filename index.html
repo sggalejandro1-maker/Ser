@@ -233,7 +233,7 @@
 <body>
 
     <header>
-        <h1>SERGIO BTC PREDICTION PRO</h1>
+        <h1>SERGIO BTC PREDICTION MACD+</h1>
         <div class="header-right">
             <div class="stats-badge">
                 🎯 Aciertos: <span id="acc-win">0</span> / <span id="acc-total">0</span> 
@@ -265,13 +265,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-1m">Conectado a WebSocket de Binance...</div>
+            <div class="desc-box" id="desc-1m">Analizando con EMA, RSI y MACD...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-1m">50.00</span></div>
+                <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-1m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-1m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-1m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 50:</span><span class="ind-val" id="ema50-1m">0.00</span></div>
             </div>
         </div>
 
@@ -293,13 +293,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-3m">Conectado a WebSocket de Binance...</div>
+            <div class="desc-box" id="desc-3m">Analizando con EMA, RSI y MACD...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-3m">50.00</span></div>
+                <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-3m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-3m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-3m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 50:</span><span class="ind-val" id="ema50-3m">0.00</span></div>
             </div>
         </div>
 
@@ -321,13 +321,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-5m">Conectado a WebSocket de Binance...</div>
+            <div class="desc-box" id="desc-5m">Analizando con EMA, RSI y MACD...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-5m">50.00</span></div>
+                <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-5m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-5m">0.00</span></div>
                 <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-5m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 50:</span><span class="ind-val" id="ema50-5m">0.00</span></div>
             </div>
         </div>
     </div>
@@ -376,9 +376,9 @@
     <!-- Bloque Inferior -->
     <div class="system-grid">
         <div class="system-card">
-            <div class="system-title">Decisión del Sistema</div>
+            <div class="system-title">Decisión del Sistema (Confluencia MACD)</div>
             <div class="system-main-text" id="sys-decision">ANALIZANDO MERCADO...</div>
-            <div class="system-desc" id="sys-reaccion">Evaluando flujo de órdenes y acción del precio.</div>
+            <div class="system-desc" id="sys-reaccion">Evaluando cruce MACD, EMAs y flujo de órdenes.</div>
             <div class="sesgo-box">Sesgo General: <span class="sesgo-val" id="sys-sesgo-global">NEUTRAL</span></div>
         </div>
 
@@ -412,9 +412,7 @@
             document.getElementById('acc-rate').innerText = `${winrate}%`;
         }
 
-        // Conexión principal mediante WebSockets directos de Binance
         function iniciarWebsockets() {
-            // 1. Ticker de precio en tiempo real
             const wsTicker = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
             wsTicker.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -426,12 +424,11 @@
                 });
 
                 historicoPrecios.push(precioActual);
-                if (historicoPrecios.length > 200) historicoPrecios.shift();
+                if (historicoPrecios.length > 250) historicoPrecios.shift();
 
                 calcularIndicadoresEnVivo();
             };
 
-            // 2. Libro de órdenes en vivo
             const wsDepth = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth10@100ms');
             wsDepth.onmessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -488,18 +485,28 @@
             return 100 - (100 / (1 + (avgG / avgP)));
         }
 
+        function calcularMACD(datos) {
+            if (datos.length < 35) return 0;
+            let ema12 = calcularEMA(12, datos);
+            let ema26 = calcularEMA(26, datos);
+            let macdLine = ema12 - ema26;
+            return macdLine;
+        }
+
         function calcularIndicadoresEnVivo() {
-            if (historicoPrecios.length < 30) return;
+            if (historicoPrecios.length < 40) return;
 
             let ema9 = calcularEMA(9, historicoPrecios);
             let ema21 = calcularEMA(21, historicoPrecios);
             let ema50 = calcularEMA(50, historicoPrecios);
             let rsi = calcularRSI(14, historicoPrecios);
+            let macdVal = calcularMACD(historicoPrecios);
 
             let indiceAlcista = 0, indiceBajista = 0;
-            if (precioActual > ema50) indiceAlcista += 40; else indiceBajista += 40;
-            if (ema9 > ema21) indiceAlcista += 40; else indiceBajista += 40;
+            if (precioActual > ema50) indiceAlcista += 30; else indiceBajista += 30;
+            if (ema9 > ema21) indiceAlcista += 30; else indiceBajista += 30;
             if (rsi > 52) indiceAlcista += 20; else if (rsi < 48) indiceBajista += 20;
+            if (macdVal > 0) indiceAlcista += 20; else indiceBajista += 20; // Filtro MACD añadido
 
             let sesgo = precioActual > ema50 && ema9 > ema21 ? "ALCISTA (BULLISH)" : precioActual < ema50 && ema9 < ema21 ? "BAJISTA (BEARISH)" : "NEUTRAL";
             let estado = indiceAlcista >= 70 ? "POSIBLE LONG" : indiceBajista >= 70 ? "POSIBLE SHORT" : "ESPERAR";
@@ -511,6 +518,7 @@
                 document.getElementById(`ema21-${tf}`).innerText = ema21.toFixed(2);
                 document.getElementById(`ema50-${tf}`).innerText = ema50.toFixed(2);
                 document.getElementById(`rsi-${tf}`).innerText = rsi.toFixed(2);
+                document.getElementById(`macd-${tf}`).innerText = macdVal.toFixed(2);
                 document.getElementById(`sesgo-${tf}`).innerText = sesgo;
 
                 document.getElementById(`alc-${tf}-val`).innerText = `${indiceAlcista}%`;
@@ -532,7 +540,6 @@
             document.getElementById('fibo-baja-bar').style.width = `${indiceBajista}%`;
         }
 
-        // Reloj sincronizado al segundo UTC exacto
         function actualizarRelojYContador() {
             const ahora = new Date();
             const segActualesEnBloque = (ahora.getUTCMinutes() % 5) * 60 + ahora.getUTCSeconds();
@@ -542,7 +549,6 @@
             let s = segRestantes % 60;
             document.getElementById('timer-5m').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-            // Evaluación de aciertos al cumplirse el ciclo de 5 minutos
             if (segRestantes === 300 || segRestantes === 0) {
                 if (!evaluadoEsteBloque && ultimaSenalTipo && ultimaSenalTipo !== "ESPERAR") {
                     if (historicoPrecios.length >= 10) {
