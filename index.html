@@ -235,7 +235,6 @@
     <header>
         <h1>SERGIO BTC PREDICTION</h1>
         <div class="header-right">
-            <!-- Contador de Aciertos y Efectividad -->
             <div class="stats-badge">
                 🎯 Aciertos: <span id="acc-win">0</span> / <span id="acc-total">0</span> 
                 (<span class="win-rate" id="acc-rate">0%</span>)
@@ -252,10 +251,10 @@
         <div class="card">
             <div class="card-header">
                 <span class="tf-title">Vela de 1 minuto</span>
-                <span id="badge-1m" class="badge badge-wait">CARGANDO...</span>
+                <span id="badge-1m" class="badge badge-wait">ESPERAR</span>
             </div>
             <div class="precio" id="precio-1m">$0.00</div>
-            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-1m">-</span></div>
+            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-1m">NEUTRAL</span></div>
 
             <div class="bar-label"><span>Índice Alcista</span><span id="alc-1m-val">0%</span></div>
             <div class="progress-bar"><div id="alc-1m-bar" class="progress-fill fill-green" style="width: 0%;"></div></div>
@@ -263,10 +262,10 @@
             <div class="bar-label"><span>Índice Bajista</span><span id="baj-1m-val">0%</span></div>
             <div class="progress-bar"><div id="baj-1m-bar" class="progress-fill fill-red" style="width: 0%;"></div></div>
 
-            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">0%</span></div>
-            <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 0%;"></div></div>
+            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">50%</span></div>
+            <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-1m">Analizando...</div>
+            <div class="desc-box" id="desc-1m">Sincronizando con Binance...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-1m">0.00</span></div>
@@ -280,10 +279,10 @@
         <div class="card">
             <div class="card-header">
                 <span class="tf-title">Vela de 3 minutos</span>
-                <span id="badge-3m" class="badge badge-wait">CARGANDO...</span>
+                <span id="badge-3m" class="badge badge-wait">ESPERAR</span>
             </div>
             <div class="precio" id="precio-3m">$0.00</div>
-            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-3m">-</span></div>
+            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-3m">NEUTRAL</span></div>
 
             <div class="bar-label"><span>Índice Alcista</span><span id="alc-3m-val">0%</span></div>
             <div class="progress-bar"><div id="alc-3m-bar" class="progress-fill fill-green" style="width: 0%;"></div></div>
@@ -291,10 +290,10 @@
             <div class="bar-label"><span>Índice Bajista</span><span id="baj-3m-val">0%</span></div>
             <div class="progress-bar"><div id="baj-3m-bar" class="progress-fill fill-red" style="width: 0%;"></div></div>
 
-            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">0%</span></div>
-            <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 0%;"></div></div>
+            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">50%</span></div>
+            <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-3m">Analizando...</div>
+            <div class="desc-box" id="desc-3m">Sincronizando con Binance...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-3m">0.00</span></div>
@@ -308,10 +307,10 @@
         <div class="card">
             <div class="card-header">
                 <span class="tf-title">Vela de 5 minutos</span>
-                <span id="badge-5m" class="badge badge-wait">CARGANDO...</span>
+                <span id="badge-5m" class="badge badge-wait">ESPERAR</span>
             </div>
             <div class="precio" id="precio-5m">$0.00</div>
-            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-5m">-</span></div>
+            <div class="sesgo-box">Sesgo: <span class="sesgo-val" id="sesgo-5m">NEUTRAL</span></div>
 
             <div class="bar-label"><span>Índice Alcista</span><span id="alc-5m-val">0%</span></div>
             <div class="progress-bar"><div id="alc-5m-bar" class="progress-fill fill-green" style="width: 0%;"></div></div>
@@ -319,10 +318,10 @@
             <div class="bar-label"><span>Índice Bajista</span><span id="baj-5m-val">0%</span></div>
             <div class="progress-bar"><div id="baj-5m-bar" class="progress-fill fill-red" style="width: 0%;"></div></div>
 
-            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">0%</span></div>
-            <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 0%;"></div></div>
+            <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">50%</span></div>
+            <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-5m">Analizando...</div>
+            <div class="desc-box" id="desc-5m">Sincronizando con Binance...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-5m">0.00</span></div>
@@ -340,7 +339,7 @@
                 <div class="ob-title-sub">BTC/USDT · BINANCE SPOT</div>
                 <div class="ob-title">Libro de órdenes</div>
             </div>
-            <div class="ob-badge-sync">LIBRO SINCRONIZADO</div>
+            <div class="ob-badge-sync">LIBRO DIRECTO VÍA WEBSOCKET</div>
         </div>
 
         <div class="ob-metrics-grid">
@@ -365,11 +364,11 @@
         <div class="ob-depth-grid">
             <div class="ob-depth-box">
                 <div class="ob-depth-header" style="color: #0ecb81;">Compradores (BID)</div>
-                <div id="ob-bids-list"><div class="ob-list-row"><span>Cargando...</span></div></div>
+                <div id="ob-bids-list"><div class="ob-list-row"><span>Conectando a Binance...</span></div></div>
             </div>
             <div class="ob-depth-box">
                 <div class="ob-depth-header" style="color: #f6465d;">Vendedores (ASK)</div>
-                <div id="ob-asks-list"><div class="ob-list-row"><span>Cargando...</span></div></div>
+                <div id="ob-asks-list"><div class="ob-list-row"><span>Conectando a Binance...</span></div></div>
             </div>
         </div>
     </div>
@@ -378,8 +377,8 @@
     <div class="system-grid">
         <div class="system-card">
             <div class="system-title">Decisión del Sistema</div>
-            <div class="system-main-text" id="sys-decision">ANALIZANDO...</div>
-            <div class="system-desc" id="sys-reaccion">Evaluando confluencia en las temporalidades.</div>
+            <div class="system-main-text" id="sys-decision">SIN DIRECCIÓN CLARA - ESPERAR</div>
+            <div class="system-desc" id="sys-reaccion">Conexión directa activa desde tu navegador.</div>
             <div class="sesgo-box">Sesgo General: <span class="sesgo-val" id="sys-sesgo-global">NEUTRAL</span></div>
         </div>
 
@@ -388,131 +387,190 @@
             <div class="system-main-text" id="sys-fibo-titulo">MONITOREANDO NIVELES</div>
             <div class="system-desc">Zonas y presión de cierre en temporalidad de 5m.</div>
             
-            <div class="bar-label"><span>Posible alza</span><span id="fibo-alza-val">0%</span></div>
-            <div class="progress-bar"><div id="fibo-alza-bar" class="progress-fill fill-green" style="width: 0%;"></div></div>
+            <div class="bar-label"><span>Posible alza</span><span id="fibo-alza-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-alza-bar" class="progress-fill fill-green" style="width: 50%;"></div></div>
 
-            <div class="bar-label"><span>Posible baja</span><span id="fibo-baja-val">0%</span></div>
-            <div class="progress-bar"><div id="fibo-baja-bar" class="progress-fill fill-red" style="width: 0%;"></div></div>
+            <div class="bar-label"><span>Posible baja</span><span id="fibo-baja-val">50%</span></div>
+            <div class="progress-bar"><div id="fibo-baja-bar" class="progress-fill fill-red" style="width: 50%;"></div></div>
         </div>
     </div>
 
     <script>
-        let tiempoCierreGlobal = 0;
+        let velas1m = [];
+        let precioActualGlobal = 0;
 
-        async function actualizarDatos() {
-            try {
-                let response = await fetch('/api/senales');
-                let data = await response.json();
-
-                if (data['5m'] && data['5m'].close_time) {
-                    tiempoCierreGlobal = Number(data['5m'].close_time);
-                }
-
+        // Conectar a Binance directamente desde el navegador del usuario (Sin bloqueos de IP)
+        function conectarBinanceWebsockets() {
+            const wsTicker = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+            wsTicker.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                precioActualGlobal = parseFloat(data.c);
                 ['1m', '3m', '5m'].forEach(tf => {
-                    if (data[tf]) {
-                        let info = data[tf];
-                        
-                        document.getElementById(`precio-${tf}`).innerText = `$${info.precio_actual.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                        document.getElementById(`sesgo-${tf}`).innerText = info.sesgo;
+                    const elem = document.getElementById(`precio-${tf}`);
+                    if (elem) elem.innerText = `$${precioActualGlobal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                });
+            };
 
-                        document.getElementById(`alc-${tf}-val`).innerText = `${info.indice_alcista}%`;
-                        document.getElementById(`alc-${tf}-bar`).style.width = `${info.indice_alcista}%`;
+            const wsDepth = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth10@100ms');
+            wsDepth.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (!data.bids || !data.asks) return;
 
-                        document.getElementById(`baj-${tf}-val`).innerText = `${info.indice_bajista}%`;
-                        document.getElementById(`baj-${tf}-bar`).style.width = `${info.indice_bajista}%`;
-
-                        document.getElementById(`pres-${tf}-val`).innerText = `${info.presion_cierre}%`;
-                        document.getElementById(`pres-${tf}-bar`).style.width = `${info.presion_cierre}%`;
-
-                        document.getElementById(`desc-${tf}`).innerText = info.explicacion;
-
-                        document.getElementById(`rsi-${tf}`).innerText = info.rsi;
-                        document.getElementById(`ema9-${tf}`).innerText = info.ema9;
-                        document.getElementById(`ema21-${tf}`).innerText = info.ema21;
-                        document.getElementById(`ema50-${tf}`).innerText = info.ema50;
-
-                        let badge = document.getElementById(`badge-${tf}`);
-                        badge.innerText = info.estado;
-                        
-                        badge.className = "badge ";
-                        if (info.estado === "POSIBLE LONG") badge.classList.add("badge-long");
-                        else if (info.estado === "POSIBLE SHORT") badge.classList.add("badge-short");
-                        else badge.classList.add("badge-wait");
-                    }
+                let compras_usd = 0;
+                let bidsHtml = '';
+                data.bids.slice(0, 5).forEach(b => {
+                    let price = parseFloat(b[0]);
+                    let qty = parseFloat(b[1]);
+                    let usd = price * qty;
+                    compras_usd += usd;
+                    bidsHtml += `<div class="ob-list-row"><span style="color:#0ecb81; font-weight:bold;">$${price.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
                 });
 
-                if (data['sistema']) {
-                    document.getElementById('sys-decision').innerText = data['sistema'].decision;
-                    document.getElementById('sys-reaccion').innerText = data['sistema'].reaccion;
-                    document.getElementById('sys-sesgo-global').innerText = data['sistema'].sesgo_global;
-                    
-                    document.getElementById('sys-fibo-titulo').innerText = data['sistema'].fibo_titulo;
-                    document.getElementById('fibo-alza-val').innerText = `${data['sistema'].posible_alza}%`;
-                    document.getElementById('fibo-alza-bar').style.width = `${data['sistema'].posible_alza}%`;
-                    
-                    document.getElementById('fibo-baja-val').innerText = `${data['sistema'].posible_baja}%`;
-                    document.getElementById('fibo-baja-bar').style.width = `${data['sistema'].posible_baja}%`;
+                let ventas_usd = 0;
+                let asksHtml = '';
+                data.asks.slice(0, 5).forEach(a => {
+                    let price = parseFloat(a[0]);
+                    let qty = parseFloat(a[1]);
+                    let usd = price * qty;
+                    ventas_usd += usd;
+                    asksHtml += `<div class="ob-list-row"><span style="color:#f6465d; font-weight:bold;">$${price.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
+                });
+
+                let total_usd = compras_usd + ventas_usd;
+                let pct_compras = total_usd > 0 ? (compras_usd / total_usd) * 100 : 50;
+                let desequilibrio = (pct_compras - (100 - pct_compras)).toFixed(1);
+
+                document.getElementById('ob-buy-usd').innerText = `$${Math.round(compras_usd).toLocaleString('en-US')}`;
+                document.getElementById('ob-sell-usd').innerText = `$${Math.round(ventas_usd).toLocaleString('en-US')}`;
+                document.getElementById('ob-imb-val').innerText = `${desequilibrio > 0 ? '+' : ''}${desequilibrio}%`;
+                document.getElementById('ob-bar-fill').style.width = `${pct_compras}%`;
+                document.getElementById('ob-bids-list').innerHTML = bidsHtml;
+                document.getElementById('ob-asks-list').innerHTML = asksHtml;
+            };
+
+            wsTicker.onclose = () => setTimeout(conectarBinanceWebsockets, 3000);
+            wsDepth.onclose = () => setTimeout(conectarBinanceWebsockets, 3000);
+        }
+
+        async function CargarKlinesDirectas() {
+            try {
+                let res = await fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=200');
+                if (!res.ok) {
+                    res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+                    let cgData = await res.json();
+                    if(cgData.bitcoin) precioActualGlobal = cgData.bitcoin.usd;
+                    return;
                 }
-
-                if (data['precision']) {
-                    document.getElementById('acc-win').innerText = data['precision'].aciertos;
-                    document.getElementById('acc-total').innerText = data['precision'].total;
-                    document.getElementById('acc-rate').innerText = `${data['precision'].winrate}%`;
-                }
-
-                if (data['libro']) {
-                    let ob = data['libro'];
-                    document.getElementById('ob-buy-usd').innerText = `$${ob.compras_usd.toLocaleString('en-US')}`;
-                    document.getElementById('ob-sell-usd').innerText = `$${ob.ventas_usd.toLocaleString('en-US')}`;
-                    document.getElementById('ob-imb-val').innerText = ob.desequilibrio;
-                    document.getElementById('ob-bar-fill').style.width = `${ob.porcentaje_compras}%`;
-
-                    let bidsHtml = ob.top_bids.map(b => 
-                        `<div class="ob-list-row"><span style="color:#0ecb81; font-weight:bold;">$${b.precio.toLocaleString('en-US')}</span><span>$${b.monto_usd.toLocaleString('en-US')}</span></div>`
-                    ).join('');
-                    document.getElementById('ob-bids-list').innerHTML = bidsHtml;
-
-                    let asksHtml = ob.top_asks.map(a => 
-                        `<div class="ob-list-row"><span style="color:#f6465d; font-weight:bold;">$${a.precio.toLocaleString('en-US')}</span><span>$${a.monto_usd.toLocaleString('en-US')}</span></div>`
-                    ).join('');
-                    document.getElementById('ob-asks-list').innerHTML = asksHtml;
-                }
-
-            } catch (error) {
-                console.error("Error al obtener datos:", error);
+                let data = await res.json();
+                velas1m = data.map(d => ({
+                    time: d[0],
+                    open: parseFloat(d[1]),
+                    high: parseFloat(d[2]),
+                    low: parseFloat(d[3]),
+                    close: parseFloat(d[4]),
+                    volume: parseFloat(d[5])
+                }));
+                
+                calcularIndicadoresLocales();
+            } catch (err) {
+                console.log("Reintentando klines directos:", err);
             }
+        }
+
+        function EMA(periodo, datos) {
+            let k = 2 / (periodo + 1);
+            let ema = datos[0];
+            for (let i = 1; i < datos.length; i++) {
+                ema = datos[i] * k + ema * (1 - k);
+            }
+            return ema;
+        }
+
+        function RSI(periodo, datos) {
+            let ganancias = 0, perdidas = 0;
+            for (let i = datos.length - periodo; i < datos.length; i++) {
+                let diff = datos[i] - datos[i - 1];
+                if (diff >= 0) ganancias += diff;
+                else perdidas -= diff;
+            }
+            let avgG = ganancias / periodo;
+            let avgP = perdidas / periodo;
+            if (avgP === 0) return 100;
+            let rs = avgG / avgP;
+            return 100 - (100 / (1 + rs));
+        }
+
+        function calcularIndicadoresLocales() {
+            if (velas1m.length < 50) return;
+
+            const closes = velas1m.map(v => v.close);
+            const ultimaVela = velas1m[velas1m.length - 1];
+
+            const ema9 = EMA(9, closes);
+            const ema21 = EMA(21, closes);
+            const ema50 = EMA(50, closes);
+            const rsi = RSI(14, closes);
+
+            const rango = ultimaVela.high - ultimaVela.low;
+            const presion = rango > 0 ? Math.round(((ultimaVela.close - ultimaVela.low) / rango) * 100) : 50;
+
+            let alcista = 0, bajista = 0;
+            if (ultimaVela.close > ema50) alcista += 35; else bajista += 35;
+            if (ema9 > ema21) alcista += 35; else bajista += 35;
+            if (rsi > 53) alcista += 30; else if (rsi < 47) bajista += 30;
+
+            let sesgo = "NEUTRAL";
+            if (ultimaVela.close > ema50 && ema9 > ema21) sesgo = "ALCISTA (BULLISH)";
+            else if (ultimaVela.close < ema50 && ema9 < ema21) sesgo = "BAJISTA (BEARISH)";
+
+            ['1m', '3m', '5m'].forEach(tf => {
+                document.getElementById(`ema9-${tf}`).innerText = ema9.toFixed(2);
+                document.getElementById(`ema21-${tf}`).innerText = ema21.toFixed(2);
+                document.getElementById(`ema50-${tf}`).innerText = ema50.toFixed(2);
+                document.getElementById(`rsi-${tf}`).innerText = rsi.toFixed(2);
+                document.getElementById(`sesgo-${tf}`).innerText = sesgo;
+
+                document.getElementById(`alc-${tf}-val`).innerText = `${alcista}%`;
+                document.getElementById(`alc-${tf}-bar`).style.width = `${alcista}%`;
+
+                document.getElementById(`baj-${tf}-val`).innerText = `${bajista}%`;
+                document.getElementById(`baj-${tf}-bar`).style.width = `${bajista}%`;
+
+                document.getElementById(`pres-${tf}-val`).innerText = `${presion}%`;
+                document.getElementById(`pres-${tf}-bar`).style.width = `${presion}%`;
+
+                let badge = document.getElementById(`badge-${tf}`);
+                if (alcista >= 70) {
+                    badge.innerText = "POSIBLE LONG";
+                    badge.className = "badge badge-long";
+                } else if (bajista >= 70) {
+                    badge.innerText = "POSIBLE SHORT";
+                    badge.className = "badge badge-short";
+                } else {
+                    badge.innerText = "ESPERAR";
+                    badge.className = "badge badge-wait";
+                }
+            });
+
+            document.getElementById('sys-sesgo-global').innerText = sesgo;
+            document.getElementById('fibo-alza-val').innerText = `${presion}%`;
+            document.getElementById('fibo-alza-bar').style.width = `${presion}%`;
+            document.getElementById('fibo-baja-val').innerText = `${100 - presion}%`;
+            document.getElementById('fibo-baja-bar').style.width = `${100 - presion}%`;
         }
 
         function actualizarReloj() {
-            let milisegundosRestantes = 0;
-
-            if (tiempoCierreGlobal > 0) {
-                milisegundosRestantes = tiempoCierreGlobal - Date.now();
-            }
-
-            if (milisegundosRestantes <= 0) {
-                const ahora = new Date();
-                const min = ahora.getMinutes();
-                const seg = ahora.getSeconds();
-                const minFaltantes = 4 - (min % 5);
-                const segFaltantes = 59 - seg;
-                milisegundosRestantes = (minFaltantes * 60 + segFaltantes) * 1000;
-            }
-
-            let totalSegundos = Math.max(0, Math.floor(milisegundosRestantes / 1000));
-            let minutos = Math.floor(totalSegundos / 60);
-            let segundos = totalSegundos % 60;
-
-            let minFormatted = String(minutos).padStart(2, '0');
-            let secFormatted = String(segundos).padStart(2, '0');
-
-            document.getElementById('timer-5m').innerText = `${minFormatted}:${secFormatted}`;
+            const ahora = new Date();
+            const min = ahora.getMinutes();
+            const seg = ahora.getSeconds();
+            const minFaltantes = 4 - (min % 5);
+            const segFaltantes = 59 - seg;
+            document.getElementById('timer-5m').innerText = `${String(minFaltantes).padStart(2, '0')}:${String(segFaltantes).padStart(2, '0')}`;
         }
 
-        actualizarDatos();
-        setInterval(actualizarDatos, 2000);
-
-        actualizarReloj();
+        conectarBinanceWebsockets();
+        CargarKlinesDirectas();
+        setInterval(CargarKlinesDirectas, 3000);
         setInterval(actualizarReloj, 1000);
     </script>
 </body>
