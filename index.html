@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sergio BTC Scalper Pro - Perfiles</title>
+    <title>Sergio BTC Scalper Pro - Alertas Sonoras</title>
     <style>
         body {
             background-color: #0b0e11;
@@ -53,7 +53,7 @@
             font-weight: bold;
         }
 
-        /* Panel de Botones de Perfil */
+        /* Panel de Configuración */
         .config-card {
             background-color: #1e2329;
             border: 1px solid #f0b90b55;
@@ -75,6 +75,7 @@
         .profile-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
         .btn-profile {
             background-color: #171a1e;
@@ -95,6 +96,21 @@
             background-color: #f0b90b;
             color: #000;
             border-color: #f0b90b;
+        }
+        .btn-audio {
+            background-color: #2b313a;
+            border: 1px solid #848e9c;
+            color: #eaecef;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-audio.active {
+            background-color: #0ecb81;
+            color: #000;
+            border-color: #0ecb81;
         }
 
         .grid-container {
@@ -291,13 +307,14 @@
         </div>
     </header>
 
-    <!-- Botones de Perfil de Trading -->
+    <!-- Botones de Perfil y Audio -->
     <div class="config-card">
         <div class="config-title">⚙️ Estilo de Trading:</div>
         <div class="profile-buttons">
             <button class="btn-profile" id="btn-agresivo" onclick="setPerfil('agresivo')">⚡ Scalping Agresivo</button>
             <button class="btn-profile active" id="btn-equilibrado" onclick="setPerfil('equilibrado')">⚖️ Equilibrado</button>
             <button class="btn-profile" id="btn-conservador" onclick="setPerfil('conservador')">🛡️ Conservador</button>
+            <button class="btn-audio" id="btn-audio" onclick="toggleAudio()">🔔 Alertas: OFF</button>
         </div>
     </div>
 
@@ -458,9 +475,10 @@
         let fallos = parseInt(localStorage.getItem('scalper_fallos') || '0');
         let total = parseInt(localStorage.getItem('scalper_total') || '0');
         let ultimaSenalTipo = null;
+        let senalSonadaActual = null;
         let evaluadoEsteBloque = false;
+        let audioHabilitado = false;
 
-        // Configuración de Perfiles
         let perfilActual = {
             emaFast: 9,
             emaMed: 21,
@@ -469,189 +487,28 @@
             macdSlow: 26
         };
 
-        function setPerfil(nombre) {
-            document.querySelectorAll('.btn-profile').forEach(b => b.classList.remove('active'));
-            if (nombre === 'agresivo') {
-                document.getElementById('btn-agresivo').classList.add('active');
-                perfilActual = { emaFast: 5, emaMed: 13, emaSlow: 34, macdFast: 8, macdSlow: 17 };
-            } else if (nombre === 'equilibrado') {
-                document.getElementById('btn-equilibrado').classList.add('active');
-                perfilActual = { emaFast: 9, emaMed: 21, emaSlow: 50, macdFast: 12, macdSlow: 26 };
-            } else if (nombre === 'conservador') {
-                document.getElementById('btn-conservador').classList.add('active');
-                perfilActual = { emaFast: 12, emaMed: 26, emaSlow: 100, macdFast: 16, macdSlow: 36 };
-            }
-            calcularIndicadoresEnVivo();
-        }
+        // Sintetizador Web Audio API (Limpio y sin archivos externos)
+        function reproducirAlertaSonora(tipo) {
+            if (!audioHabilitado) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-        function actualizarWinrateUI() {
-            let winrate = total > 0 ? ((aciertos / total) * 100).toFixed(1) : 0;
-            document.getElementById('acc-win').innerText = aciertos;
-            document.getElementById('acc-total').innerText = total;
-            document.getElementById('acc-rate').innerText = `${winrate}%`;
-        }
-
-        function iniciarWebsockets() {
-            const wsTicker = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
-            wsTicker.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                precioActual = parseFloat(data.c);
-                
-                ['1m', '3m', '5m'].forEach(tf => {
-                    const el = document.getElementById(`precio-${tf}`);
-                    if (el) el.innerText = `$${precioActual.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-                });
-
-                historicoPrecios.push(precioActual);
-                if (historicoPrecios.length > 300) historicoPrecios.shift();
-
-                calcularIndicadoresEnVivo();
-            };
-
-            const wsDepth = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@depth10@100ms');
-            wsDepth.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (!data.bids || !data.asks) return;
-
-                let comprasUsd = 0, bidsHtml = '';
-                data.bids.slice(0, 5).forEach(b => {
-                    let p = parseFloat(b[0]), q = parseFloat(b[1]), usd = p * q;
-                    comprasUsd += usd;
-                    bidsHtml += `<div class="ob-list-row"><span style="color:#0ecb81; font-weight:bold;">$${p.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
-                });
-
-                let ventasUsd = 0, asksHtml = '';
-                data.asks.slice(0, 5).forEach(a => {
-                    let p = parseFloat(a[0]), q = parseFloat(a[1]), usd = p * q;
-                    ventasUsd += usd;
-                    asksHtml += `<div class="ob-list-row"><span style="color:#f6465d; font-weight:bold;">$${p.toLocaleString('en-US', {minimumFractionDigits:2})}</span><span>$${Math.round(usd).toLocaleString('en-US')}</span></div>`;
-                });
-
-                let totalUsd = comprasUsd + ventasUsd;
-                let pctCompras = totalUsd > 0 ? (comprasUsd / totalUsd) * 100 : 50;
-                let deseq = (pctCompras - (100 - pctCompras)).toFixed(1);
-
-                document.getElementById('ob-buy-usd').innerText = `$${Math.round(comprasUsd).toLocaleString('en-US')}`;
-                document.getElementById('ob-sell-usd').innerText = `$${Math.round(ventasUsd).toLocaleString('en-US')}`;
-                document.getElementById('ob-imb-val').innerText = `${deseq > 0 ? '+' : ''}${deseq}%`;
-                document.getElementById('ob-bar-fill').style.width = `${pctCompras}%`;
-                document.getElementById('ob-bids-list').innerHTML = bidsHtml;
-                document.getElementById('ob-asks-list').innerHTML = asksHtml;
-            };
-
-            wsTicker.onclose = () => setTimeout(iniciarWebsockets, 3000);
-            wsDepth.onclose = () => setTimeout(iniciarWebsockets, 3000);
-        }
-
-        function calcularEMA(periodo, datos) {
-            if (datos.length < periodo) return datos[datos.length - 1] || 0;
-            let k = 2 / (periodo + 1);
-            let ema = datos[0];
-            for (let i = 1; i < datos.length; i++) ema = datos[i] * k + ema * (1 - k);
-            return ema;
-        }
-
-        function calcularRSI(periodo, datos) {
-            if (datos.length < periodo + 1) return 50;
-            let ganancias = 0, perdidas = 0;
-            for (let i = datos.length - periodo; i < datos.length; i++) {
-                let diff = datos[i] - datos[i - 1];
-                if (diff >= 0) ganancias += diff; else perdidas -= diff;
-            }
-            let avgG = ganancias / periodo;
-            let avgP = perdidas / periodo;
-            if (avgP === 0) return 100;
-            return 100 - (100 / (1 + (avgG / avgP)));
-        }
-
-        function calcularMACD(fast, slow, datos) {
-            if (datos.length < slow) return 0;
-            let emaFast = calcularEMA(fast, datos);
-            let emaSlow = calcularEMA(slow, datos);
-            return emaFast - emaSlow;
-        }
-
-        function calcularIndicadoresEnVivo() {
-            if (historicoPrecios.length < 20) return;
-
-            let emaFast = calcularEMA(perfilActual.emaFast, historicoPrecios);
-            let emaMed = calcularEMA(perfilActual.emaMed, historicoPrecios);
-            let emaSlow = calcularEMA(perfilActual.emaSlow, historicoPrecios);
-            let rsi = calcularRSI(14, historicoPrecios);
-            let macdVal = calcularMACD(perfilActual.macdFast, perfilActual.macdSlow, historicoPrecios);
-
-            let indiceAlcista = 0, indiceBajista = 0;
-            if (precioActual > emaSlow) indiceAlcista += 30; else indiceBajista += 30;
-            if (emaFast > emaMed) indiceAlcista += 30; else indiceBajista += 30;
-            if (rsi > 52) indiceAlcista += 20; else if (rsi < 48) indiceBajista += 20;
-            if (macdVal > 0) indiceAlcista += 20; else indiceBajista += 20;
-
-            let sesgo = precioActual > emaSlow && emaFast > emaMed ? "ALCISTA (BULLISH)" : precioActual < emaSlow && emaFast < emaMed ? "BAJISTA (BEARISH)" : "NEUTRAL";
-            let estado = indiceAlcista >= 70 ? "POSIBLE LONG" : indiceBajista >= 70 ? "POSIBLE SHORT" : "ESPERAR";
-
-            ultimaSenalTipo = estado;
-
-            ['1m', '3m', '5m'].forEach(tf => {
-                document.getElementById(`ema9-${tf}`).innerText = emaFast.toFixed(2);
-                document.getElementById(`ema50-${tf}`).innerText = emaSlow.toFixed(2);
-                document.getElementById(`rsi-${tf}`).innerText = rsi.toFixed(2);
-                document.getElementById(`macd-${tf}`).innerText = macdVal.toFixed(2);
-                document.getElementById(`sesgo-${tf}`).innerText = sesgo;
-
-                document.getElementById(`alc-${tf}-val`).innerText = `${indiceAlcista}%`;
-                document.getElementById(`alc-${tf}-bar`).style.width = `${indiceAlcista}%`;
-
-                document.getElementById(`baj-${tf}-val`).innerText = `${indiceBajista}%`;
-                document.getElementById(`baj-${tf}-bar`).style.width = `${indiceBajista}%`;
-
-                let badge = document.getElementById(`badge-${tf}`);
-                badge.innerText = estado;
-                badge.className = `badge ${estado === 'POSIBLE LONG' ? 'badge-long' : estado === 'POSIBLE SHORT' ? 'badge-short' : 'badge-wait'}`;
-            });
-
-            document.getElementById('sys-sesgo-global').innerText = sesgo;
-            document.getElementById('sys-decision').innerText = estado === "ESPERAR" ? "SIN DIRECCIÓN CLARA - ESPERAR" : `ALTA CONFLUENCIA - ${estado}`;
-            document.getElementById('fibo-alza-val').innerText = `${indiceAlcista}%`;
-            document.getElementById('fibo-alza-bar').style.width = `${indiceAlcista}%`;
-            document.getElementById('fibo-baja-val').innerText = `${indiceBajista}%`;
-            document.getElementById('fibo-baja-bar').style.width = `${indiceBajista}%`;
-        }
-
-        function actualizarRelojYContador() {
-            const ahora = new Date();
-            const segActualesEnBloque = (ahora.getUTCMinutes() % 5) * 60 + ahora.getUTCSeconds();
-            const segRestantes = 300 - segActualesEnBloque;
-
-            let m = Math.floor(segRestantes / 60);
-            let s = segRestantes % 60;
-            document.getElementById('timer-5m').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-            if (segRestantes === 300 || segRestantes === 0) {
-                if (!evaluadoEsteBloque && ultimaSenalTipo && ultimaSenalTipo !== "ESPERAR") {
-                    if (historicoPrecios.length >= 10) {
-                        let precioInicioVela = historicoPrecios[historicoPrecios.length - 10] || precioActual;
-                        if (ultimaSenalTipo === "POSIBLE LONG") {
-                            if (precioActual > precioInicioVela) aciertos++; else fallos++;
-                            total++;
-                        } else if (ultimaSenalTipo === "POSIBLE SHORT") {
-                            if (precioActual < precioInicioVela) aciertos++; else fallos++;
-                            total++;
-                        }
-                        localStorage.setItem('scalper_aciertos', aciertos);
-                        localStorage.setItem('scalper_fallos', fallos);
-                        localStorage.setItem('scalper_total', total);
-                        actualizarWinrateUI();
-                    }
-                    evaluadoEsteBloque = true;
+                if (tipo === "LONG") {
+                    // Tono agudo ascendente (Alcista)
+                    osc.frequency.setValueAtTime(520, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
+                } else {
+                    // Tono grave descendente (Bajista)
+                    osc.frequency.setValueAtTime(880, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
                 }
-            } else {
-                evaluadoEsteBloque = false;
-            }
-        }
 
-        actualizarWinrateUI();
-        iniciarWebsockets();
-        setInterval(actualizarRelojYContador, 1000);
-    </script>
-</body>
-</html>
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3
