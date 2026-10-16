@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sergio BTC Scalper Pro - En Vivo</title>
+    <title>Sergio BTC Scalper Pro - Personalizable</title>
     <style>
         body {
             background-color: #0b0e11;
@@ -18,7 +18,7 @@
             align-items: center;
             border-bottom: 1px solid #22252a;
             padding-bottom: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         h1 { margin: 0; font-size: 22px; color: #f0b90b; }
         .header-right {
@@ -52,6 +52,46 @@
             font-size: 12px;
             font-weight: bold;
         }
+
+        /* Panel de Configuración */
+        .config-card {
+            background-color: #1e2329;
+            border: 1px solid #f0b90b55;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .config-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #f0b90b;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .config-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #848e9c;
+        }
+        .input-group input {
+            background-color: #171a1e;
+            border: 1px solid #2b313a;
+            color: #eaecef;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 50px;
+            text-align: center;
+            font-weight: bold;
+        }
+
         .grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -233,7 +273,7 @@
 <body>
 
     <header>
-        <h1>SERGIO BTC PREDICTION MACD+</h1>
+        <h1>SERGIO BTC PREDICTION PRO</h1>
         <div class="header-right">
             <div class="stats-badge">
                 🎯 Aciertos: <span id="acc-win">0</span> / <span id="acc-total">0</span> 
@@ -245,6 +285,18 @@
             <span class="status-live">EN VIVO</span>
         </div>
     </header>
+
+    <!-- Panel Ajustable de Parámetros -->
+    <div class="config-card">
+        <div class="config-title">⚙️ Personalización de Indicadores</div>
+        <div class="config-inputs">
+            <div class="input-group">EMA Rápida: <input type="number" id="cfg-ema1" value="9"></div>
+            <div class="input-group">EMA Media: <input type="number" id="cfg-ema2" value="21"></div>
+            <div class="input-group">EMA Lenta: <input type="number" id="cfg-ema3" value="50"></div>
+            <div class="input-group">MACD Rápido: <input type="number" id="cfg-macd-fast" value="12"></div>
+            <div class="input-group">MACD Lento: <input type="number" id="cfg-macd-slow" value="26"></div>
+        </div>
+    </div>
 
     <div class="grid-container" id="dashboard">
         <!-- 1M -->
@@ -265,13 +317,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-1m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-1m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-1m">Analizando con EMA, RSI y MACD...</div>
+            <div class="desc-box" id="desc-1m">Analizando indicadores personalizados...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-1m">50.00</span></div>
                 <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-1m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-1m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-1m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Rápida:</span><span class="ind-val" id="ema9-1m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Lenta:</span><span class="ind-val" id="ema50-1m">0.00</span></div>
             </div>
         </div>
 
@@ -293,13 +345,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-3m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-3m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-3m">Analizando con EMA, RSI y MACD...</div>
+            <div class="desc-box" id="desc-3m">Analizando indicadores personalizados...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-3m">50.00</span></div>
                 <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-3m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-3m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-3m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Rápida:</span><span class="ind-val" id="ema9-3m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Lenta:</span><span class="ind-val" id="ema50-3m">0.00</span></div>
             </div>
         </div>
 
@@ -321,13 +373,13 @@
             <div class="bar-label"><span>Presión de Cierre</span><span id="pres-5m-val">50%</span></div>
             <div class="progress-bar"><div id="pres-5m-bar" class="progress-fill fill-yellow" style="width: 50%;"></div></div>
 
-            <div class="desc-box" id="desc-5m">Analizando con EMA, RSI y MACD...</div>
+            <div class="desc-box" id="desc-5m">Analizando indicadores personalizados...</div>
 
             <div class="indicators-grid">
                 <div class="ind-item"><span class="ind-label">RSI (14):</span><span class="ind-val" id="rsi-5m">50.00</span></div>
                 <div class="ind-item"><span class="ind-label">MACD:</span><span class="ind-val" id="macd-5m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 9:</span><span class="ind-val" id="ema9-5m">0.00</span></div>
-                <div class="ind-item"><span class="ind-label">EMA 21:</span><span class="ind-val" id="ema21-5m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Rápida:</span><span class="ind-val" id="ema9-5m">0.00</span></div>
+                <div class="ind-item"><span class="ind-label">EMA Lenta:</span><span class="ind-val" id="ema50-5m">0.00</span></div>
             </div>
         </div>
     </div>
@@ -376,9 +428,9 @@
     <!-- Bloque Inferior -->
     <div class="system-grid">
         <div class="system-card">
-            <div class="system-title">Decisión del Sistema (Confluencia MACD)</div>
+            <div class="system-title">Decisión del Sistema</div>
             <div class="system-main-text" id="sys-decision">ANALIZANDO MERCADO...</div>
-            <div class="system-desc" id="sys-reaccion">Evaluando cruce MACD, EMAs y flujo de órdenes.</div>
+            <div class="system-desc" id="sys-reaccion">Evaluando cruce de medias y MACD configurados.</div>
             <div class="sesgo-box">Sesgo General: <span class="sesgo-val" id="sys-sesgo-global">NEUTRAL</span></div>
         </div>
 
@@ -424,7 +476,7 @@
                 });
 
                 historicoPrecios.push(precioActual);
-                if (historicoPrecios.length > 250) historicoPrecios.shift();
+                if (historicoPrecios.length > 300) historicoPrecios.shift();
 
                 calcularIndicadoresEnVivo();
             };
@@ -455,7 +507,7 @@
                 document.getElementById('ob-buy-usd').innerText = `$${Math.round(comprasUsd).toLocaleString('en-US')}`;
                 document.getElementById('ob-sell-usd').innerText = `$${Math.round(ventasUsd).toLocaleString('en-US')}`;
                 document.getElementById('ob-imb-val').innerText = `${deseq > 0 ? '+' : ''}${deseq}%`;
-                document.getElementById('ob-bar-fill').style.width = `${pct_compras}%`;
+                document.getElementById('ob-bar-fill').style.width = `${pctCompras}%`;
                 document.getElementById('ob-bids-list').innerHTML = bidsHtml;
                 document.getElementById('ob-asks-list').innerHTML = asksHtml;
             };
@@ -485,96 +537,27 @@
             return 100 - (100 / (1 + (avgG / avgP)));
         }
 
-        function calcularMACD(datos) {
-            if (datos.length < 35) return 0;
-            let ema12 = calcularEMA(12, datos);
-            let ema26 = calcularEMA(26, datos);
-            let macdLine = ema12 - ema26;
-            return macdLine;
+        function calcularMACD(fast, slow, datos) {
+            if (datos.length < slow) return 0;
+            let emaFast = calcularEMA(fast, datos);
+            let emaSlow = calcularEMA(slow, datos);
+            return emaFast - emaSlow;
         }
 
         function calcularIndicadoresEnVivo() {
-            if (historicoPrecios.length < 40) return;
+            if (historicoPrecios.length < 30) return;
 
-            let ema9 = calcularEMA(9, historicoPrecios);
-            let ema21 = calcularEMA(21, historicoPrecios);
-            let ema50 = calcularEMA(50, historicoPrecios);
+            // Obtener valores personalizados desde la interfaz
+            let pEma1 = parseInt(document.getElementById('cfg-ema1').value) || 9;
+            let pEma2 = parseInt(document.getElementById('cfg-ema2').value) || 21;
+            let pEma3 = parseInt(document.getElementById('cfg-ema3').value) || 50;
+            let pMacdFast = parseInt(document.getElementById('cfg-macd-fast').value) || 12;
+            let pMacdSlow = parseInt(document.getElementById('cfg-macd-slow').value) || 26;
+
+            let emaFast = calcularEMA(pEma1, historicoPrecios);
+            let emaMed = calcularEMA(pEma2, historicoPrecios);
+            let emaSlow = calcularEMA(pEma3, historicoPrecios);
             let rsi = calcularRSI(14, historicoPrecios);
-            let macdVal = calcularMACD(historicoPrecios);
+            let macdVal = calcularMACD(pMacdFast, pMacdSlow, historicoPrecios);
 
-            let indiceAlcista = 0, indiceBajista = 0;
-            if (precioActual > ema50) indiceAlcista += 30; else indiceBajista += 30;
-            if (ema9 > ema21) indiceAlcista += 30; else indiceBajista += 30;
-            if (rsi > 52) indiceAlcista += 20; else if (rsi < 48) indiceBajista += 20;
-            if (macdVal > 0) indiceAlcista += 20; else indiceBajista += 20; // Filtro MACD añadido
-
-            let sesgo = precioActual > ema50 && ema9 > ema21 ? "ALCISTA (BULLISH)" : precioActual < ema50 && ema9 < ema21 ? "BAJISTA (BEARISH)" : "NEUTRAL";
-            let estado = indiceAlcista >= 70 ? "POSIBLE LONG" : indiceBajista >= 70 ? "POSIBLE SHORT" : "ESPERAR";
-
-            ultimaSenalTipo = estado;
-
-            ['1m', '3m', '5m'].forEach(tf => {
-                document.getElementById(`ema9-${tf}`).innerText = ema9.toFixed(2);
-                document.getElementById(`ema21-${tf}`).innerText = ema21.toFixed(2);
-                document.getElementById(`ema50-${tf}`).innerText = ema50.toFixed(2);
-                document.getElementById(`rsi-${tf}`).innerText = rsi.toFixed(2);
-                document.getElementById(`macd-${tf}`).innerText = macdVal.toFixed(2);
-                document.getElementById(`sesgo-${tf}`).innerText = sesgo;
-
-                document.getElementById(`alc-${tf}-val`).innerText = `${indiceAlcista}%`;
-                document.getElementById(`alc-${tf}-bar`).style.width = `${indiceAlcista}%`;
-
-                document.getElementById(`baj-${tf}-val`).innerText = `${indiceBajista}%`;
-                document.getElementById(`baj-${tf}-bar`).style.width = `${indiceBajista}%`;
-
-                let badge = document.getElementById(`badge-${tf}`);
-                badge.innerText = estado;
-                badge.className = `badge ${estado === 'POSIBLE LONG' ? 'badge-long' : estado === 'POSIBLE SHORT' ? 'badge-short' : 'badge-wait'}`;
-            });
-
-            document.getElementById('sys-sesgo-global').innerText = sesgo;
-            document.getElementById('sys-decision').innerText = estado === "ESPERAR" ? "SIN DIRECCIÓN CLARA - ESPERAR" : `ALTA CONFLUENCIA - ${estado}`;
-            document.getElementById('fibo-alza-val').innerText = `${indiceAlcista}%`;
-            document.getElementById('fibo-alza-bar').style.width = `${indiceAlcista}%`;
-            document.getElementById('fibo-baja-val').innerText = `${indiceBajista}%`;
-            document.getElementById('fibo-baja-bar').style.width = `${indiceBajista}%`;
-        }
-
-        function actualizarRelojYContador() {
-            const ahora = new Date();
-            const segActualesEnBloque = (ahora.getUTCMinutes() % 5) * 60 + ahora.getUTCSeconds();
-            const segRestantes = 300 - segActualesEnBloque;
-
-            let m = Math.floor(segRestantes / 60);
-            let s = segRestantes % 60;
-            document.getElementById('timer-5m').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-
-            if (segRestantes === 300 || segRestantes === 0) {
-                if (!evaluadoEsteBloque && ultimaSenalTipo && ultimaSenalTipo !== "ESPERAR") {
-                    if (historicoPrecios.length >= 10) {
-                        let precioInicioVela = historicoPrecios[historicoPrecios.length - 10] || precioActual;
-                        if (ultimaSenalTipo === "POSIBLE LONG") {
-                            if (precioActual > precioInicioVela) aciertos++; else fallos++;
-                            total++;
-                        } else if (ultimaSenalTipo === "POSIBLE SHORT") {
-                            if (precioActual < precioInicioVela) aciertos++; else fallos++;
-                            total++;
-                        }
-                        localStorage.setItem('scalper_aciertos', aciertos);
-                        localStorage.setItem('scalper_fallos', fallos);
-                        localStorage.setItem('scalper_total', total);
-                        actualizarWinrateUI();
-                    }
-                    evaluadoEsteBloque = true;
-                }
-            } else {
-                evaluadoEsteBloque = false;
-            }
-        }
-
-        actualizarWinrateUI();
-        iniciarWebsockets();
-        setInterval(actualizarRelojYContador, 1000);
-    </script>
-</body>
-</html>
+            let indiceAlcista
